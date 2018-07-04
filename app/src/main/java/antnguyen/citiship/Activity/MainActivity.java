@@ -1,7 +1,10 @@
-package antnguyen.citiship;
+package antnguyen.citiship.Activity;
+
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+
+import antnguyen.citiship.R;
 
 public class MainActivity extends AppCompatActivity {
 

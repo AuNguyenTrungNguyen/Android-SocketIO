@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Citiship</string>
+
+    <string name="title_info_act">Information</string>
+    <string name="title_login_act">Login</string>
+    <string name="title_on_shift_act">OnShift</string>
 </resources>
