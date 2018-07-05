@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="antnguyen.citiship">
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -21,11 +23,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".Activity.InfoActivity"
             android:label="@string/title_info_act" />
+
         <activity android:name=".Activity.OnShiftActivity"
             android:label="@string/title_on_shift_act"/>
+
+        <service
+            android:name=".Service.LocationService"
+            android:enabled="true" />
     </application>
 
 </manifest>

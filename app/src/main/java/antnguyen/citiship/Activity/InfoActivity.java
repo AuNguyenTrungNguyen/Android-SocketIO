@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import antnguyen.citiship.R;
+import antnguyen.citiship.Service.LocationService;
 import antnguyen.citiship.Util.Constants;
 
 public class InfoActivity extends AppCompatActivity implements View.OnClickListener {
@@ -81,6 +82,8 @@ public class InfoActivity extends AppCompatActivity implements View.OnClickListe
         SharedPreferences.Editor editor = mPreferences.edit();
         editor.putBoolean(Constants.PRE_KEY_ON_SHIFT, true);
         editor.apply();
+
+        startService(new Intent(this, LocationService.class));
 
         Intent intent = new Intent(this, OnShiftActivity.class);
         startActivity(intent);

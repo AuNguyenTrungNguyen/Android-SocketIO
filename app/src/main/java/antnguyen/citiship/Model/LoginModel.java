@@ -39,7 +39,6 @@ public class LoginModel {
         this.data = data;
     }
 
-
     public class Data {
 
         @SerializedName("name")
