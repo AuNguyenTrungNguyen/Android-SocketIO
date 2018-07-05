@@ -19,6 +19,7 @@
             android:layout_width="250dp"
             android:layout_height="250dp"
             android:layout_gravity="center"
+            android:contentDescription="logo"
             android:src="@drawable/img_sign_in" />
 
 
@@ -31,9 +32,9 @@
             android:orientation="horizontal">
 
             <ImageView
-
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:contentDescription="ic_user"
                 android:padding="8dp"
                 android:src="@drawable/ic_person_black_24dp" />
 
@@ -41,10 +42,12 @@
                 android:id="@+id/edt_username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="User name" />
+                android:hint="User name"
+                android:inputType="text" />
 
 
         </LinearLayout>
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -55,19 +58,20 @@
             android:orientation="horizontal">
 
             <ImageView
-
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:contentDescription="ic_pass"
                 android:padding="8dp"
                 android:src="@drawable/ic_lock_black_24dp" />
 
             <EditText
                 android:id="@+id/edt_password"
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:hint="Password" />
+                android:hint="Password"
+                android:inputType="textPassword"
+                android:padding="8dp" />
         </LinearLayout>
 
 
