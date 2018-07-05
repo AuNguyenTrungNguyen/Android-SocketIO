@@ -1,6 +1,5 @@
 package antnguyen.citiship.Activity;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,11 +8,11 @@ import android.view.View;
 import android.widget.Button;
 
 import antnguyen.citiship.R;
+import antnguyen.citiship.Service.LocationService;
 import antnguyen.citiship.Util.Constants;
 
 public class OnShiftActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private ProgressDialog mProgress;
     private SharedPreferences mPreferences;
 
     private Button mBtnOutShift;
@@ -24,6 +23,7 @@ public class OnShiftActivity extends AppCompatActivity implements View.OnClickLi
         setContentView(R.layout.activity_on_shift);
 
         init();
+
     }
 
     private void init() {
@@ -32,15 +32,11 @@ public class OnShiftActivity extends AppCompatActivity implements View.OnClickLi
 
         mBtnOutShift = findViewById(R.id.btn_out_shift);
         mBtnOutShift.setOnClickListener(this);
-
-        mProgress = new ProgressDialog(this);
-        mProgress.setTitle("Lấy dữ liệu!!!");
-
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.btn_out_shift:
                 outShift();
                 break;
@@ -53,8 +49,11 @@ public class OnShiftActivity extends AppCompatActivity implements View.OnClickLi
         editor.putBoolean(Constants.PRE_KEY_ON_SHIFT, false);
         editor.apply();
 
+        stopService(new Intent(this, LocationService.class));
+
         Intent intent = new Intent(this, InfoActivity.class);
         startActivity(intent);
         finish();
     }
+
 }
