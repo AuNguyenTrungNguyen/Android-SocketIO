@@ -8,7 +8,9 @@ public class Constants {
     public static final String PRE_KEY_USERNAME = "key_username";
     public static final String PRE_KEY_TOKEN = "key_token";
     public static final String PRE_KEY_ON_SHIFT = "key_in_shift";
+    public static final String PRE_KEY_STATUS_GPS = "status_gps";
 
     //Log
     public static final String TAG = "CTSApplication";
+
 }

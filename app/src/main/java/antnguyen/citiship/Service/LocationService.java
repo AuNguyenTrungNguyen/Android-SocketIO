@@ -3,29 +3,28 @@ package antnguyen.citiship.Service;
 import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Intent;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Bundle;
+import android.content.SharedPreferences;
 import android.os.IBinder;
-import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import antnguyen.citiship.Activity.InfoActivity;
 import antnguyen.citiship.Util.Constants;
 
 import static antnguyen.citiship.Util.Constants.TAG;
 
-public class LocationService extends Service implements LocationListener {
+public class LocationService extends Service {
 
     public Emitter.Listener onConnect = args -> Log.e(TAG, "connect");
     public Emitter.Listener onDisconnect = args -> Log.e(TAG, "disconnect");
@@ -33,6 +32,7 @@ public class LocationService extends Service implements LocationListener {
 
     private Socket mSocket;
     private Timer mTimer;
+    private FusedLocationProviderClient mFusedLocationClient;
     private static final long mPeriod = 3000; //Variable period to post data server
 
     {
@@ -51,6 +51,7 @@ public class LocationService extends Service implements LocationListener {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
         mSocket.on(Socket.EVENT_CONNECT, onConnect);
         mSocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
         mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
@@ -58,13 +59,12 @@ public class LocationService extends Service implements LocationListener {
         mSocket.connect();
 
         mTimer = new Timer();
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         mTimer.schedule(new TimerTask() {
             @Override
             public void run() {
                 String location = getLocation();
-
-                Log.i(Constants.TAG, "Location: " + location);
 
                 if (!location.equals("")) {
 
@@ -91,6 +91,18 @@ public class LocationService extends Service implements LocationListener {
     public void onDestroy() {
         super.onDestroy();
         mTimer.cancel();
+
+        //Destroy service is out-shift and go to InfoActivity
+        SharedPreferences mPreferences = this.getSharedPreferences(Constants.PRE_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putBoolean(Constants.PRE_KEY_ON_SHIFT, false);
+        editor.apply();
+
+        Intent intent = new Intent(this, InfoActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        startActivity(intent);
+
         Log.i(TAG, "onDestroy Service");
     }
 
@@ -100,55 +112,18 @@ public class LocationService extends Service implements LocationListener {
 
         final String[] locator = {""};
 
-        try {
+        mFusedLocationClient.getLastLocation()
+                .addOnSuccessListener(location -> {
 
-            LocationManager locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
+                    if (location != null) {
 
-            if (locationManager != null) {
+                        locator[0] = location.getLatitude() + ", " + location.getLongitude();
+                        Log.i(Constants.TAG, "Location: " + locator[0]);
 
-                boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-                if (isGPSEnabled) {
-
-                    locationManager.requestLocationUpdates(
-                            LocationManager.GPS_PROVIDER,
-                            0,
-                            0,
-                            this,
-                            Looper.getMainLooper());
-
-                    Location myLocation = locationManager
-                            .getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                    if (myLocation != null) {
-                        locator[0] = myLocation.getLatitude() + ", " + myLocation.getLongitude();
                     }
-                }
-            }
 
-        } catch (Exception e) {
-            Log.i(Constants.TAG, e.getMessage());
-        }
+                });
 
         return locator[0];
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
     }
 }

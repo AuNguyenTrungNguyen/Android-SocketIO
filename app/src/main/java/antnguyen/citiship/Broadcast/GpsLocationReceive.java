@@ -3,6 +3,7 @@ package antnguyen.citiship.Broadcast;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.LocationManager;
 import android.util.Log;
 
@@ -19,12 +20,20 @@ public class GpsLocationReceive extends BroadcastReceiver {
 
             if (locationManager != null) {
                 boolean isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-                Log.i(Constants.TAG, "Change provider with GPS: " + isGpsEnabled);
+                SharedPreferences preferences = context.getSharedPreferences(Constants.PRE_NAME, Context.MODE_PRIVATE);
+                boolean checkInShift = preferences.getBoolean(Constants.PRE_KEY_ON_SHIFT, false);
+
+                Log.i(Constants.TAG, "changeGPS: " + isGpsEnabled);
+                Log.i(Constants.TAG, "checkInShift: " + checkInShift);
 
                 //If app run background and GPS off
-                if (!isGpsEnabled) {
+                if (!isGpsEnabled && checkInShift) {
                     context.stopService(new Intent(context, LocationService.class));
                 }
+
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putBoolean(Constants.PRE_KEY_STATUS_GPS, isGpsEnabled);
+                editor.apply();
             }
         }
     }
