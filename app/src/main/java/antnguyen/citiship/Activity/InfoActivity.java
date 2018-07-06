@@ -29,6 +29,8 @@ public class InfoActivity extends AppCompatActivity implements View.OnClickListe
 
         checkOnShift();
 
+        //checkGPS();
+
         showInfo();
     }
 
@@ -52,6 +54,15 @@ public class InfoActivity extends AppCompatActivity implements View.OnClickListe
             Intent intent = new Intent(this, OnShiftActivity.class);
             startActivity(intent);
             finish();
+        }
+    }
+
+    private void checkGPS(){
+        boolean status = mPreferences.getBoolean(Constants.PRE_KEY_STATUS_GPS, true);
+        if (!status){
+            mBtnInShift.setVisibility(View.INVISIBLE);
+        }else{
+            mBtnInShift.setVisibility(View.VISIBLE);
         }
     }
 
