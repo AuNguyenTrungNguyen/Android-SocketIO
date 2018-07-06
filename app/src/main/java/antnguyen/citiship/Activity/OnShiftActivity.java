@@ -56,4 +56,11 @@ public class OnShiftActivity extends AppCompatActivity implements View.OnClickLi
         finish();
     }
 
+    public void minimizeApp(View v) {
+        Intent startMain = new Intent(Intent.ACTION_MAIN);
+        startMain.addCategory(Intent.CATEGORY_HOME);
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(startMain);
+    }
+
 }

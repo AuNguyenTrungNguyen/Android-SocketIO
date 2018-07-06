@@ -17,9 +17,9 @@
 
         <ImageView
             android:layout_width="250dp"
-            android:layout_height="250dp"
+            android:layout_height="200dp"
             android:layout_gravity="center"
-            android:contentDescription="logo"
+            android:contentDescription="@string/logo"
             android:src="@drawable/img_sign_in" />
 
 
@@ -34,15 +34,17 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="ic_user"
-                android:padding="8dp"
+                android:layout_margin="8dp"
+                android:contentDescription="@string/ic_user"
                 android:src="@drawable/ic_person_black_24dp" />
 
             <EditText
                 android:id="@+id/edt_username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="User name"
+                android:layout_margin="8dp"
+                android:background="@color/white"
+                android:hint="@string/user_name"
                 android:inputType="text" />
 
 
@@ -60,18 +62,18 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="ic_pass"
-                android:padding="8dp"
+                android:layout_margin="8dp"
+                android:contentDescription="@string/ic_pass"
                 android:src="@drawable/ic_lock_black_24dp" />
 
             <EditText
                 android:id="@+id/edt_password"
-
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Password"
-                android:inputType="textPassword"
-                android:padding="8dp" />
+                android:layout_margin="8dp"
+                android:background="@color/white"
+                android:hint="@string/password"
+                android:inputType="textPassword" />
         </LinearLayout>
 
 
@@ -82,7 +84,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="8dp"
             android:background="@drawable/br_button"
-            android:text="Đăng nhập"
+            android:text="@string/dang_nhap"
             android:textColor="@color/white" />
     </LinearLayout>
 

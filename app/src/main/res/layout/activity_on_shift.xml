@@ -5,14 +5,81 @@
     android:layout_height="match_parent"
     android:gravity="center_vertical"
     android:orientation="vertical"
-    tools:context=".Activity.OnShiftActivity">
+    android:padding="8dp"
+    tools:context=".Activity.OnShiftActivity"
+    android:background="@color/white">
+
+    <ImageView
+        android:layout_gravity="center"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:src="@drawable/img_even"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:background="@drawable/br_edittext"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/tv_vido"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Vĩ độ: "
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tv_lat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/tv_vido"
+            android:text="927327939827"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/tv_kinhdo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_vido"
+            android:layout_marginTop="8dp"
+            android:text="Kinh độ: "
+            android:textSize="20sp" />
+
+        <TextView
+            android:textStyle="bold"
+            android:id="@+id/tv_long"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_vido"
+            android:layout_marginTop="8dp"
+            android:layout_toRightOf="@id/tv_kinhdo"
+            android:text="927327939827"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="20sp" />
+
+
+    </RelativeLayout>
+
 
     <Button
+        android:textColor="@color/white"
         android:id="@+id/btn_out_shift"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_margin="8dp"
-        android:text="OUT SHIFT" />
+        android:layout_marginTop="16dp"
+        android:background="@drawable/br_button_accent"
+        android:text="Dừng ca làm việc" />
+
+    <Button
+        android:textColor="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/br_button"
+        android:onClick="minimizeApp"
+        android:text="Ẩn ứng dụng" />
 
 </LinearLayout>

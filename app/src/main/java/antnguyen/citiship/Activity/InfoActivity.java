@@ -61,7 +61,7 @@ public class InfoActivity extends AppCompatActivity implements View.OnClickListe
         String name = mPreferences.getString(Constants.PRE_KEY_NAME, "");
         String username = mPreferences.getString(Constants.PRE_KEY_USERNAME, "");
 
-        mTvName.setText(name);
+        mTvName.setText(" "+name);
         mTvUsername.setText(username);
     }
 

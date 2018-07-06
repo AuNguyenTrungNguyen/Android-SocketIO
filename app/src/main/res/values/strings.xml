@@ -4,4 +4,11 @@
     <string name="title_info_act">Information</string>
     <string name="title_login_act">Login</string>
     <string name="title_on_shift_act">OnShift</string>
+    <string name="dang_nhap">Đăng nhập</string>
+    <string name="password">Password</string>
+    <string name="ic_pass">ic_pass</string>
+    <string name="user_name">User name</string>
+    <string name="ic_user">ic_user</string>
+    <string name="logo">logo</string>
+    <string name="xin_chao">Xin chào </string>
 </resources>
