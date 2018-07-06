@@ -2,8 +2,12 @@ package antnguyen.citiship.Service;
 
 import android.annotation.SuppressLint;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Location;
+import android.location.LocationManager;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -32,6 +36,12 @@ public class LocationService extends Service {
 
     private Socket mSocket;
     private Timer mTimer;
+
+    private LocationManager mLocationManager = null;
+    private static final int LOCATION_INTERVAL = 1000;
+    private static final float LOCATION_DISTANCE = 10f;
+    private String mLocation = "";
+
     private FusedLocationProviderClient mFusedLocationClient;
     private static final long mPeriod = 3000; //Variable period to post data server
 
@@ -42,6 +52,43 @@ public class LocationService extends Service {
             Log.e(TAG, e.getMessage());
         }
     }
+
+    private class LocationListener implements android.location.LocationListener {
+        Location mLastLocation;
+
+        public LocationListener(String provider) {
+            Log.e(TAG, "LocationListener " + provider);
+            mLastLocation = new Location(provider);
+            mLocation =  mLastLocation.getLatitude() + ", " + mLastLocation.getLongitude();
+            Log.i(TAG, "Location: " + mLocation);
+        }
+
+        @Override
+        public void onLocationChanged(Location location) {
+            Log.e(TAG, "onLocationChanged: " + location);
+            mLastLocation.set(location);
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+            Log.e(TAG, "onProviderDisabled: " + provider);
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+            Log.e(TAG, "onProviderEnabled: " + provider);
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+            Log.e(TAG, "onStatusChanged: " + provider);
+        }
+    }
+
+    LocationListener[] mLocationListeners = new LocationListener[]{
+            new LocationListener(LocationManager.GPS_PROVIDER),
+            new LocationListener(LocationManager.NETWORK_PROVIDER)
+    };
 
     @Nullable
     @Override
@@ -55,8 +102,8 @@ public class LocationService extends Service {
         mSocket.on(Socket.EVENT_CONNECT, onConnect);
         mSocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
         mSocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
-
         mSocket.connect();
+
 
         mTimer = new Timer();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -64,11 +111,10 @@ public class LocationService extends Service {
         mTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                String location = getLocation();
 
-                if (!location.equals("")) {
+                if (!mLocation.equals("")) {
 
-                    mSocket.emit("send-location", (Object) location.getBytes());
+                    mSocket.emit("send-location", (Object) mLocation.getBytes());
 
                     mSocket.on("send-location-callback", args -> {
                         String data = Arrays.toString(args);
@@ -85,6 +131,25 @@ public class LocationService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.i(TAG, "onCreate Service");
+        initializeLocationManager();
+        try {
+            mLocationManager.requestLocationUpdates(
+                    LocationManager.NETWORK_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
+                    mLocationListeners[1]);
+        } catch (SecurityException ex) {
+            Log.i(TAG, "fail to request location update, ignore", ex);
+        } catch (IllegalArgumentException ex) {
+            Log.d(TAG, "network provider does not exist, " + ex.getMessage());
+        }
+        try {
+            mLocationManager.requestLocationUpdates(
+                    LocationManager.GPS_PROVIDER, LOCATION_INTERVAL, LOCATION_DISTANCE,
+                    mLocationListeners[0]);
+        } catch (SecurityException ex) {
+            Log.i(TAG, "fail to request location update, ignore", ex);
+        } catch (IllegalArgumentException ex) {
+            Log.d(TAG, "gps provider does not exist " + ex.getMessage());
+        }
     }
 
     @Override
@@ -100,10 +165,26 @@ public class LocationService extends Service {
 
         Intent intent = new Intent(this, InfoActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
         startActivity(intent);
 
         Log.i(TAG, "onDestroy Service");
+
+        if (mLocationManager != null) {
+            for (LocationListener mLocationListener : mLocationListeners) {
+                try {
+                    mLocationManager.removeUpdates(mLocationListener);
+                } catch (Exception ex) {
+                    Log.i(TAG, "fail to remove location listners, ignore", ex);
+                }
+            }
+        }
+    }
+
+    private void initializeLocationManager() {
+        Log.e(TAG, "initializeLocationManager");
+        if (mLocationManager == null) {
+            mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+        }
     }
 
     //Function return current location with format: "latValue, lngValue"
@@ -118,7 +199,7 @@ public class LocationService extends Service {
                     if (location != null) {
 
                         locator[0] = location.getLatitude() + ", " + location.getLongitude();
-                        Log.i(Constants.TAG, "Location: " + locator[0]);
+                        Log.i(TAG, "Location: " + locator[0]);
 
                     }
 

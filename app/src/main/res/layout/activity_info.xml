@@ -8,6 +8,15 @@
     android:orientation="vertical"
     tools:context=".Activity.InfoActivity">
 
+    <TextView
+        android:textColor="#ff0000"
+        android:text="GPS ĐÃ TẮT"
+        android:visibility="invisible"
+        android:id="@+id/tv_status_gps"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp" />
+
 
     <ImageView
         android:layout_width="200dp"

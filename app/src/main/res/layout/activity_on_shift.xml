@@ -15,52 +15,48 @@
         android:layout_height="200dp"
         android:src="@drawable/img_even"/>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:background="@drawable/br_edittext"
-        android:gravity="center">
+    <!--<RelativeLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="150dp"-->
+        <!--android:background="@drawable/br_edittext"-->
+        <!--android:gravity="center">-->
 
-        <TextView
-            android:id="@+id/tv_vido"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Vĩ độ: "
-            android:textSize="20sp" />
+        <!--<TextView-->
+            <!--android:id="@+id/tv_vido"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Vĩ độ: "-->
+            <!--android:textSize="20sp" />-->
 
-        <TextView
-            android:id="@+id/tv_lat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/tv_vido"
-            android:text="927327939827"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="20sp"
-            android:textStyle="bold"/>
+        <!--<TextView-->
+            <!--android:id="@+id/tv_lat"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_toRightOf="@id/tv_vido"-->
+            <!--android:textColor="@color/colorPrimaryDark"-->
+            <!--android:textSize="20sp"-->
+            <!--android:textStyle="bold"/>-->
 
-        <TextView
-            android:id="@+id/tv_kinhdo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tv_vido"
-            android:layout_marginTop="8dp"
-            android:text="Kinh độ: "
-            android:textSize="20sp" />
+        <!--<TextView-->
+            <!--android:id="@+id/tv_kinhdo"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_below="@id/tv_vido"-->
+            <!--android:layout_marginTop="8dp"-->
+            <!--android:text="Kinh độ: "-->
+            <!--android:textSize="20sp" />-->
 
-        <TextView
-            android:textStyle="bold"
-            android:id="@+id/tv_long"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tv_vido"
-            android:layout_marginTop="8dp"
-            android:layout_toRightOf="@id/tv_kinhdo"
-            android:text="927327939827"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="20sp" />
-
-
-    </RelativeLayout>
+        <!--<TextView-->
+            <!--android:textStyle="bold"-->
+            <!--android:id="@+id/tv_long"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_below="@id/tv_vido"-->
+            <!--android:layout_marginTop="8dp"-->
+            <!--android:layout_toRightOf="@id/tv_kinhdo"-->
+            <!--android:textColor="@color/colorPrimaryDark"-->
+            <!--android:textSize="20sp" />-->
+    <!--</RelativeLayout>-->
 
 
     <Button

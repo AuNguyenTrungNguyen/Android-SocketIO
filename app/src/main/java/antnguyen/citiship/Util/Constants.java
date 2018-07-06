@@ -13,4 +13,7 @@ public class Constants {
     //Log
     public static final String TAG = "CTSApplication";
 
+    //IntentFilter
+    public static final String INTENT_ACTION_GPS = "ACTION_CHECK_GPS";
+    public static final String INTENT_EXTRA_GPS = "CHECK_GPS";
 }
