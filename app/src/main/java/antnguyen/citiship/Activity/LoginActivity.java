@@ -1,9 +1,12 @@
 package antnguyen.citiship.Activity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
@@ -35,6 +38,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         init();
 
+        checkGPS();
+
         checkLogin();
     }
 
@@ -51,6 +56,36 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         mProgress.setTitle("Đang xác thực tài khoản");
     }
 
+    private void checkGPS() {
+        LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        final int REQUEST_CODE = 111;
+
+        if (manager != null && !manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setMessage("GPS đang tắt!!!")
+                    .setCancelable(false)
+                    .setPositiveButton("Cài đặt",
+                            (dialog, id) -> {
+                                Intent callGPSSettingIntent = new Intent(
+                                        android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                startActivityForResult(callGPSSettingIntent, REQUEST_CODE);
+                            });
+            alertDialogBuilder.setNegativeButton("Thoát",
+                    (dialog, id) -> {
+                        dialog.cancel();
+                        finish();
+                    });
+            AlertDialog alert = alertDialogBuilder.create();
+            alert.show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        checkGPS();
+    }
+
     private void checkLogin() {
 
         String token = mPreferences.getString(Constants.PRE_KEY_TOKEN, "");
@@ -59,6 +94,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             Intent intent = new Intent(this, InfoActivity.class);
             startActivity(intent);
             finish();
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_login:
+                sendLogin();
+                break;
         }
     }
 
@@ -123,14 +167,5 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void showError(String error) {
         Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.btn_login:
-                sendLogin();
-                break;
-        }
     }
 }

@@ -3,24 +3,29 @@ package antnguyen.citiship.Service;
 import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import antnguyen.citiship.Util.Constants;
+
 import static antnguyen.citiship.Util.Constants.TAG;
 
-public class LocationService extends Service {
+public class LocationService extends Service implements LocationListener {
 
     public Emitter.Listener onConnect = args -> Log.e(TAG, "connect");
     public Emitter.Listener onDisconnect = args -> Log.e(TAG, "disconnect");
@@ -57,23 +62,21 @@ public class LocationService extends Service {
         mTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                String location = getLastKnownLocation();
-                mSocket.emit("send-location", (Object) location.getBytes());
+                String location = getLocation();
 
-                mSocket.on("send-location-callback", args -> {
-                    String data = Arrays.toString(args);
-                    Log.e(TAG, "call: " + data);
-                });
+                Log.i(Constants.TAG, "Location: " + location);
+
+                if (!location.equals("")) {
+
+                    mSocket.emit("send-location", (Object) location.getBytes());
+
+                    mSocket.on("send-location-callback", args -> {
+                        String data = Arrays.toString(args);
+                        Log.e(TAG, "call: " + data);
+                    });
+                }
             }
         }, 0, mPeriod);
-
-
-        mTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                Log.e(TAG, getLastKnownLocation());
-            }
-        }, 0, 3000);
 
         return START_STICKY;
     }
@@ -93,23 +96,59 @@ public class LocationService extends Service {
 
     //Function return current location with format: "latValue, lngValue"
     @SuppressLint("MissingPermission")
-    public String getLastKnownLocation() {
+    public String getLocation() {
 
         final String[] locator = {""};
 
-        FusedLocationProviderClient mFusedLocationClient;
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        try {
 
-        mFusedLocationClient.getLastLocation()
-                .addOnSuccessListener(location -> {
-                    if (location != null) {
+            LocationManager locationManager = (LocationManager) this.getSystemService(LOCATION_SERVICE);
 
-                        locator[0] = location.getLatitude() + ", " + location.getLongitude();
-                        Log.i("CTSApplication", locator[0]);
+            if (locationManager != null) {
 
+                boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+
+                if (isGPSEnabled) {
+
+                    locationManager.requestLocationUpdates(
+                            LocationManager.GPS_PROVIDER,
+                            0,
+                            0,
+                            this,
+                            Looper.getMainLooper());
+
+                    Location myLocation = locationManager
+                            .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    if (myLocation != null) {
+                        locator[0] = myLocation.getLatitude() + ", " + myLocation.getLongitude();
                     }
-                });
+                }
+            }
+
+        } catch (Exception e) {
+            Log.i(Constants.TAG, e.getMessage());
+        }
 
         return locator[0];
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
     }
 }
