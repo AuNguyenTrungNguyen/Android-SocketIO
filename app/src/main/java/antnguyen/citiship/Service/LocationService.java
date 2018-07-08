@@ -1,6 +1,8 @@
 package antnguyen.citiship.Service;
 
 import android.annotation.SuppressLint;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +12,8 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
 import com.github.nkzawa.emitter.Emitter;
@@ -25,6 +29,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import antnguyen.citiship.Activity.InfoActivity;
+import antnguyen.citiship.Activity.OnShiftActivity;
 import antnguyen.citiship.Model.DataEmit;
 import antnguyen.citiship.Util.Constants;
 
@@ -47,6 +52,13 @@ public class LocationService extends Service {
     private LocationManager mLocationManager = null;
     private String mLocation = "";
     private FusedLocationProviderClient mFusedLocationClient;
+
+    private NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
+            .setSmallIcon(android.R.drawable.ic_notification_overlay)
+            .setContentTitle("Citiship")
+            .setContentText("Bạn đang trong ca làm!")
+            .setOngoing(true);
+    private NotificationManager mNotificationManager;
 
     {
         try {
@@ -89,7 +101,7 @@ public class LocationService extends Service {
                         Log.e(TAG, "call: " + emits[0].getData());
                         Log.e(TAG, "call: " + emits[0].isResult());
                     });
-                }else{
+                } else {
                     Log.e(TAG, "mLocation.equals()");
                 }
             }
@@ -102,6 +114,27 @@ public class LocationService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.e(TAG, "onCreate Service");
+
+        SharedPreferences mPreferences = this.getSharedPreferences(Constants.PRE_NAME, MODE_PRIVATE);
+
+        boolean statusNotify = mPreferences.getBoolean(Constants.PRE_KEY_STATUS_NOTIFY, false);
+        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        Intent resultIntent = new Intent(this, OnShiftActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addNextIntentWithParentStack(resultIntent);
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        mBuilder.setContentIntent(resultPendingIntent);
+
+
+        if(statusNotify){
+            mNotificationManager.notify(0,mBuilder.build());
+        }else{
+            Log.e(TAG, "Not push notify!");
+        }
+
+
         initializeLocationManager();
         try {
             mLocationManager.requestLocationUpdates(
@@ -135,6 +168,7 @@ public class LocationService extends Service {
         SharedPreferences mPreferences = this.getSharedPreferences(Constants.PRE_NAME, MODE_PRIVATE);
         SharedPreferences.Editor editor = mPreferences.edit();
         editor.putBoolean(Constants.PRE_KEY_ON_SHIFT, false);
+        editor.putBoolean(Constants.PRE_KEY_STATUS_NOTIFY, false);
         editor.apply();
 
         Intent intent = new Intent(this, InfoActivity.class);
@@ -152,6 +186,7 @@ public class LocationService extends Service {
                 }
             }
         }
+        mNotificationManager.cancel(0);
     }
 
     @Override

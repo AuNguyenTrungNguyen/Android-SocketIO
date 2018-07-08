@@ -75,4 +75,12 @@ public class OnShiftActivity extends AppCompatActivity implements View.OnClickLi
         startActivity(startMain);
         finish();
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putBoolean(Constants.PRE_KEY_STATUS_NOTIFY, true);
+        editor.apply();
+    }
 }

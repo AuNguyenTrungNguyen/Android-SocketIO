@@ -128,6 +128,7 @@ public class InfoActivity extends AppCompatActivity implements View.OnClickListe
     private void inShift() {
         SharedPreferences.Editor editor = mPreferences.edit();
         editor.putBoolean(Constants.PRE_KEY_ON_SHIFT, true);
+        editor.putBoolean(Constants.PRE_KEY_STATUS_NOTIFY, false);
         editor.apply();
 
         startService(new Intent(this, LocationService.class));
