@@ -51,6 +51,7 @@ public class LocationService extends Service {
     {
         try {
             mSocket = IO.socket("https://hoclamweb.club:8080");
+            //mSocket = IO.socket("https://nihonchannel.com:8081");
         } catch (URISyntaxException e) {
             Log.e(TAG, e.getMessage());
         }
@@ -146,6 +147,16 @@ public class LocationService extends Service {
                 }
             }
         }
+    }
+
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+
+        Intent intent = new Intent(getApplicationContext(), this.getClass());
+        intent.setPackage(getPackageName());
+        startService(intent);
+
+        super.onTaskRemoved(rootIntent);
     }
 
     private void initializeLocationManager() {
