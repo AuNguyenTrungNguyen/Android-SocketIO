@@ -64,6 +64,9 @@ public class OnShiftActivity extends AppCompatActivity implements View.OnClickLi
 
     private void outShift() {
 
+        SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putBoolean(Constants.PRE_KEY_STATUS_NOTIFY, false);
+        editor.apply();
         stopService(new Intent(this, LocationService.class));
         finish();
     }
@@ -82,5 +85,6 @@ public class OnShiftActivity extends AppCompatActivity implements View.OnClickLi
         SharedPreferences.Editor editor = mPreferences.edit();
         editor.putBoolean(Constants.PRE_KEY_STATUS_NOTIFY, true);
         editor.apply();
+        stopService(new Intent(this, LocationService.class));
     }
 }

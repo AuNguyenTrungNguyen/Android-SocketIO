@@ -1,6 +1,5 @@
 package antnguyen.citiship.Service;
 
-import android.annotation.SuppressLint;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -19,8 +18,6 @@ import android.util.Log;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.gson.Gson;
 
 import java.net.URISyntaxException;
@@ -51,7 +48,6 @@ public class LocationService extends Service {
     private Timer mTimer;
     private LocationManager mLocationManager = null;
     private String mLocation = "";
-    private FusedLocationProviderClient mFusedLocationClient;
 
     private NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(this)
             .setSmallIcon(android.R.drawable.ic_notification_overlay)
@@ -84,7 +80,6 @@ public class LocationService extends Service {
         mSocket.connect();
 
         mTimer = new Timer();
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         mTimer.schedule(new TimerTask() {
             @Override
@@ -107,7 +102,7 @@ public class LocationService extends Service {
             }
         }, 0, mPeriod);
 
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     @Override
@@ -128,9 +123,9 @@ public class LocationService extends Service {
         mBuilder.setContentIntent(resultPendingIntent);
 
 
-        if(statusNotify){
-            mNotificationManager.notify(0,mBuilder.build());
-        }else{
+        if (statusNotify) {
+            mNotificationManager.notify(0, mBuilder.build());
+        } else {
             Log.e(TAG, "Not push notify!");
         }
 
@@ -160,23 +155,33 @@ public class LocationService extends Service {
     public void onDestroy() {
         super.onDestroy();
         mTimer.cancel();
-//        mSocket.off(Socket.EVENT_CONNECT, onConnect);
-//        mSocket.off(Socket.EVENT_DISCONNECT, onDisconnect);
+        mSocket.off(Socket.EVENT_CONNECT, onConnect);
+        mSocket.off(Socket.EVENT_DISCONNECT, onDisconnect);
         mSocket.off(Socket.EVENT_CONNECT_ERROR, onConnectError);
 
-        //Destroy service is out-shift and go to InfoActivity
         SharedPreferences mPreferences = this.getSharedPreferences(Constants.PRE_NAME, MODE_PRIVATE);
-        SharedPreferences.Editor editor = mPreferences.edit();
-        editor.putBoolean(Constants.PRE_KEY_ON_SHIFT, false);
-        editor.putBoolean(Constants.PRE_KEY_STATUS_NOTIFY, false);
-        editor.apply();
+        boolean statusNotify = mPreferences.getBoolean(Constants.PRE_KEY_STATUS_NOTIFY, false);
 
-        Intent intent = new Intent(this, InfoActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+        SharedPreferences.Editor editor = mPreferences.edit();
+
+        if (statusNotify) {
+
+            //Send broadcast
+            Intent intentStartService = new Intent(Constants.INTENT_ACTION_START_SERVICE);
+            sendBroadcast(intentStartService);
+            Log.e(TAG, "Service send broadcast!");
+
+        }else{
+            editor.putBoolean(Constants.PRE_KEY_ON_SHIFT, false);
+            editor.apply();
+            Intent intent = new Intent(this, InfoActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
+        //Destroy service is out-shift and go to InfoActivity
+
 
         Log.e(TAG, "onDestroy Service");
-
         if (mLocationManager != null) {
             for (LocationListener mLocationListener : mLocationListeners) {
                 try {
@@ -189,42 +194,12 @@ public class LocationService extends Service {
         mNotificationManager.cancel(0);
     }
 
-    @Override
-    public void onTaskRemoved(Intent rootIntent) {
-
-        Intent intent = new Intent(getApplicationContext(), this.getClass());
-        intent.setPackage(getPackageName());
-        startService(intent);
-
-        super.onTaskRemoved(rootIntent);
-    }
 
     private void initializeLocationManager() {
         Log.e(TAG, "initializeLocationManager");
         if (mLocationManager == null) {
             mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         }
-    }
-
-    //Function return current location with format: "latValue, lngValue"
-    @SuppressLint("MissingPermission")
-    public String getLocation() {
-
-        final String[] locator = {""};
-
-        mFusedLocationClient.getLastLocation()
-                .addOnSuccessListener(location -> {
-
-                    if (location != null) {
-
-                        locator[0] = location.getLatitude() + ", " + location.getLongitude();
-                        Log.e(TAG, "Location: " + locator[0]);
-
-                    }
-
-                });
-
-        return locator[0];
     }
 
     private class LocationListener implements android.location.LocationListener {
