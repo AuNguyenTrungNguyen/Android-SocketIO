@@ -62,8 +62,8 @@ public class LocationService extends Service {
 
     {
         try {
-            mSocket = IO.socket("https://hoclamweb.club:8080");
-            //mSocket = IO.socket("https://nihonchannel.com:8081");
+            //mSocket = IO.socket("https://hoclamweb.club:8080");
+            mSocket = IO.socket("https://nihonchannel.com:8081");
         } catch (URISyntaxException e) {
             Log.e(TAG, e.getMessage());
         }
