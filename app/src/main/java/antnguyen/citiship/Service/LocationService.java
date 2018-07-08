@@ -89,6 +89,8 @@ public class LocationService extends Service {
                         Log.e(TAG, "call: " + emits[0].getData());
                         Log.e(TAG, "call: " + emits[0].isResult());
                     });
+                }else{
+                    Log.e(TAG, "mLocation.equals()");
                 }
             }
         }, 0, mPeriod);
@@ -125,6 +127,9 @@ public class LocationService extends Service {
     public void onDestroy() {
         super.onDestroy();
         mTimer.cancel();
+//        mSocket.off(Socket.EVENT_CONNECT, onConnect);
+//        mSocket.off(Socket.EVENT_DISCONNECT, onDisconnect);
+        mSocket.off(Socket.EVENT_CONNECT_ERROR, onConnectError);
 
         //Destroy service is out-shift and go to InfoActivity
         SharedPreferences mPreferences = this.getSharedPreferences(Constants.PRE_NAME, MODE_PRIVATE);
@@ -201,7 +206,7 @@ public class LocationService extends Service {
         public void onLocationChanged(Location location) {
             mLocation = location.getLatitude() + " , " + location.getLongitude();
             Log.e(TAG, "onLocationChanged: " + mLocation);
-
+            //mLocation = mLastLocation.getLatitude() + ", " + mLastLocation.getLongitude();
         }
 
         @Override
