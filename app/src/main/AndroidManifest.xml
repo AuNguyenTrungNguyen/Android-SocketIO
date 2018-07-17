@@ -42,12 +42,6 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".Broadcast.StartServiceBroadcast">
-            <intent-filter>
-                <action android:name="ACTION_START_SERVICE" />
-            </intent-filter>
-        </receiver>
-        
     </application>
 
 </manifest>
